@@ -1,0 +1,261 @@
+<!-- Configuration/configPage.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Labor-Gold Index</title>
+</head>
+<body>
+    <div id="LaborGoldConfigPage" data-role="page"
+         class="page type-interior pluginConfigurationPage"
+         data-require="emby-input,emby-button,emby-checkbox,emby-select">
+
+        <div data-role="content">
+            <div class="content-primary">
+                <form id="LaborGoldConfigForm">
+                    <div class="sectionTitleContainer flex align-items-center">
+                        <h2 class="sectionTitle">🪙 Labor-Gold Index Configuration</h2>
+                    </div>
+
+                    <div class="verticalSection">
+                        <p class="description">
+                            The Labor-Gold Index measures a movie's real cultural impact by
+                            converting box office revenue through a median-income-to-gold
+                            purchasing power index. How much permanent human-labor-value
+                            did audiences exchange to see this film?
+                        </p>
+                    </div>
+
+                    <div class="verticalSection">
+                        <h3 class="sectionTitle">API Keys</h3>
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="txtOmdbApiKey">
+                                OMDB API Key
+                            </label>
+                            <input is="emby-input" type="text" id="txtOmdbApiKey"
+                                   placeholder="Get free key at omdbapi.com/apikey.aspx" />
+                            <div class="fieldDescription">
+                                Used to fetch domestic box office data. Free tier allows 1,000 requests/day.
+                            </div>
+                        </div>
+
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="txtTmdbApiKey">
+                                TMDB API Key (recommended)
+                            </label>
+                            <input is="emby-input" type="text" id="txtTmdbApiKey"
+                                   placeholder="Get free key at themoviedb.org/settings/api" />
+                            <div class="fieldDescription">
+                                Used to fetch worldwide gross and production budgets.
+                                Provides the most complete data. Free with registration.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="verticalSection">
+                        <h3 class="sectionTitle">Index Settings</h3>
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="selBaseYear">Base Year</label>
+                            <select is="emby-select" id="selBaseYear">
+                                <option value="1920">1920 (Default — Gold Standard Era)</option>
+                                <option value="1900">1900 (Turn of Century)</option>
+                                <option value="1950">1950 (Post-War Boom)</option>
+                                <option value="1971">1971 (Nixon Shock)</option>
+                                <option value="2000">2000 (Modern Baseline)</option>
+                            </select>
+                            <div class="fieldDescription">
+                                The anchor year for all LG calculations. 1920 is recommended
+                                as it precedes the Bretton Woods distortion.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="verticalSection">
+                        <h3 class="sectionTitle">Display Options</h3>
+
+                        <div class="checkboxContainer">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="chkAddTags" />
+                                <span>Add LG data as tags</span>
+                            </label>
+                            <div class="fieldDescription">
+                                Adds tags like "LG:Gross:$2,066M" and "LG:Tier:Monumental"
+                                for filtering and browsing.
+                            </div>
+                        </div>
+
+                        <div class="checkboxContainer">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="chkUseCriticRating" />
+                                <span>Store LG score in Critic Rating (enables sorting)</span>
+                            </label>
+                            <div class="fieldDescription">
+                                ⚠️ This will overwrite existing critic ratings!
+                                Enables sorting your library by LG-adjusted gross using
+                                Jellyfin's built-in "Critic Rating" sort option.
+                            </div>
+                        </div>
+
+                        <div class="checkboxContainer">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="chkAppendOverview" />
+                                <span>Append LG summary to movie overview</span>
+                            </label>
+                            <div class="fieldDescription">
+                                Adds a 🪙 line at the bottom of each movie's description
+                                showing the LG-adjusted gross, budget, and ROI.
+                            </div>
+                        </div>
+
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="txtTagPrefix">Tag Prefix</label>
+                            <input is="emby-input" type="text" id="txtTagPrefix"
+                                   placeholder="LG" />
+                            <div class="fieldDescription">
+                                Prefix for tag names (e.g., "LG" produces "LG:Gross:$100M").
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Calculator -->
+                    <div class="verticalSection">
+                        <h3 class="sectionTitle">🧮 Live Calculator</h3>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                            <div class="inputContainer" style="flex: 1; min-width: 150px;">
+                                <label class="inputLabel" for="calcAmount">Amount ($)</label>
+                                <input is="emby-input" type="number" id="calcAmount"
+                                       placeholder="2800000000" />
+                            </div>
+                            <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                <label class="inputLabel" for="calcYear">Year</label>
+                                <input is="emby-input" type="number" id="calcYear"
+                                       placeholder="2019" />
+                            </div>
+                            <div>
+                                <button is="emby-button" type="button" id="btnCalculate"
+                                        class="raised button-submit block">
+                                    Calculate
+                                </button>
+                            </div>
+                        </div>
+                        <div id="calcResult" style="margin-top: 12px; padding: 16px;
+                             background: rgba(255,215,0,0.1); border-radius: 8px;
+                             border: 1px solid rgba(255,215,0,0.3); display: none;">
+                        </div>
+                    </div>
+
+                    <!-- Tier Explanation -->
+                    <div class="verticalSection">
+                        <h3 class="sectionTitle">📊 LG Tier System</h3>
+                        <table class="tblLGTiers" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                    <th style="text-align: left; padding: 8px;">Tier</th>
+                                    <th style="text-align: left; padding: 8px;">LG-Adjusted Gross</th>
+                                    <th style="text-align: left; padding: 8px;">Examples</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td style="padding: 8px;">🏆 Legendary</td>
+                                    <td>$3B+</td><td>Titanic</td></tr>
+                                <tr><td style="padding: 8px;">⭐ Monumental</td>
+                                    <td>$1B–$3B</td><td>LOTR, Avatar, Endgame</td></tr>
+                                <tr><td style="padding: 8px;">🎬 Epic</td>
+                                    <td>$500M–$1B</td><td>Star Wars, Sound of Music, Jaws</td></tr>
+                                <tr><td style="padding: 8px;">🎥 Blockbuster</td>
+                                    <td>$100M–$500M</td><td>Gone with the Wind, Snow White</td></tr>
+                                <tr><td style="padding: 8px;">🎞️ Hit</td>
+                                    <td>$50M–$100M</td><td>Major studio successes</td></tr>
+                                <tr><td style="padding: 8px;">✅ Success</td>
+                                    <td>$10M–$50M</td><td>Solid performers</td></tr>
+                                <tr><td style="padding: 8px;">📽️ Modest</td>
+                                    <td>&lt;$10M</td><td>Indie / limited release</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <button is="emby-button" type="submit" class="raised button-submit block">
+                            <span>Save</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            var LaborGoldConfig = {
+                pluginUniqueId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+            };
+
+            document.querySelector('#LaborGoldConfigPage')
+                .addEventListener('pageshow', function () {
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(LaborGoldConfig.pluginUniqueId)
+                        .then(function (config) {
+                            document.querySelector('#txtOmdbApiKey').value = config.OmdbApiKey || '';
+                            document.querySelector('#txtTmdbApiKey').value = config.TmdbApiKey || '';
+                            document.querySelector('#selBaseYear').value = config.BaseYear || 1920;
+                            document.querySelector('#chkAddTags').checked = config.AddLaborGoldTags;
+                            document.querySelector('#chkUseCriticRating').checked = config.UseCriticRatingField;
+                            document.querySelector('#chkAppendOverview').checked = config.AppendToOverview;
+                            document.querySelector('#txtTagPrefix').value = config.TagPrefix || 'LG';
+                            Dashboard.hideLoadingMsg();
+                        });
+                });
+
+            document.querySelector('#LaborGoldConfigForm')
+                .addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(LaborGoldConfig.pluginUniqueId)
+                        .then(function (config) {
+                            config.OmdbApiKey = document.querySelector('#txtOmdbApiKey').value;
+                            config.TmdbApiKey = document.querySelector('#txtTmdbApiKey').value;
+                            config.BaseYear = parseInt(document.querySelector('#selBaseYear').value);
+                            config.AddLaborGoldTags = document.querySelector('#chkAddTags').checked;
+                            config.UseCriticRatingField = document.querySelector('#chkUseCriticRating').checked;
+                            config.AppendToOverview = document.querySelector('#chkAppendOverview').checked;
+                            config.TagPrefix = document.querySelector('#txtTagPrefix').value;
+
+                            ApiClient.updatePluginConfiguration(LaborGoldConfig.pluginUniqueId, config)
+                                .then(function () {
+                                    Dashboard.processPluginConfigurationUpdateResult();
+                                });
+                        });
+                });
+
+            // Live calculator
+            document.querySelector('#btnCalculate').addEventListener('click', function () {
+                var amount = parseFloat(document.querySelector('#calcAmount').value);
+                var year = parseInt(document.querySelector('#calcYear').value);
+
+                if (!amount || !year) return;
+
+                ApiClient.fetch({
+                    url: ApiClient.getUrl('LaborGold/Calculate', {
+                        nominalValue: amount,
+                        year: year,
+                        baseYear: parseInt(document.querySelector('#selBaseYear').value) || 1920
+                    }),
+                    type: 'GET',
+                    dataType: 'json'
+                }).then(function (result) {
+                    var el = document.querySelector('#calcResult');
+                    el.style.display = 'block';
+                    el.innerHTML =
+                        '<strong>🪙 Result:</strong><br/>' +
+                        'Nominal: $' + amount.toLocaleString() + ' (' + year + ')<br/>' +
+                        'Gold oz buyable by median income: ' +
+                            parseFloat(result.GoldOzBuyableInYear).toFixed(1) + ' oz<br/>' +
+                        'Labor-Gold Ratio: ' +
+                            parseFloat(result.LaborGoldRatio).toFixed(3) + '<br/>' +
+                        '<strong>LG-Adjusted: $' +
+                            parseFloat(result.AdjustedValue).toLocaleString(undefined,
+                                {maximumFractionDigits: 0}) +
+                        '</strong>';
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>

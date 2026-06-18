@@ -1,0 +1,27 @@
+# build.yaml
+name: "Labor-Gold Index"
+guid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+version: "1.0.0.0"
+targetAbi: "10.11.0.0"
+framework: "net9.0"
+overview: "Calculates Labor-Gold adjusted box office revenue for your movie library"
+description: >
+  Measures real cultural impact by converting box office revenue through a
+  median-income-to-gold purchasing power index anchored to 1920. Browse and
+  sort your library by how much real human-labor-value audiences exchanged
+  to see each film.
+category: "Metadata"
+owner: "Labor-Gold Index Contributors"
+artifacts:
+  - "Jellyfin.Plugin.LaborGoldIndex.dll"
+changelog: |
+  ## v1.0.0.0
+  - Initial release
+  - Historical gold price data (1900-2026)
+  - Historical median income data (1900-2026)
+  - OMDB + TMDB box office data fetching
+  - LG tier tagging system
+  - Optional critic rating override for sorting
+  - REST API for calculations and rankings
+  - Scheduled weekly update task
+  - Live calculator in config page
