@@ -61,7 +61,7 @@ For any year *t*, G(t) tells you how many ounces of gold a median household's in
 Requires [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0).
  
 ```bash
-git clone https://github.com/YOUR_USERNAME/labor-gold.git
+git clone https://github.com/Lodactio/labor-gold-index.git
 cd labor-gold
 git checkout master
 dotnet publish -c Release
