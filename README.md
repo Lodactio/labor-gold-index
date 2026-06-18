@@ -1,0 +1,1 @@
+# labor-gold-index
